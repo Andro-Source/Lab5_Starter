@@ -1,5 +1,3 @@
-// explore.js
-
 window.addEventListener("DOMContentLoaded", init);
 
 function init() {
@@ -13,32 +11,28 @@ function init() {
   function loadVoices() {
     voices = speechSynthesis.getVoices();
 
-    voiceSelect.innerHTML = "";
-
-    for (let i = 0; i < voices.length; i++) {
-      const option = document.createElement("option");
-      option.value = i;
-      option.textContent = voices[i].name;
-      voiceSelect.appendChild(option);
-    }
+    voiceSelect.innerHTML = voices
+      .map((voice, index) => `<option value="${index}">${voice.name}</option>`)
+      .join("");
   }
 
-  loadVoices();
-  speechSynthesis.addEventListener("voiceschanged", loadVoices);
-
-  button.addEventListener("click", function () {
+  function speak() {
     const speech = new SpeechSynthesisUtterance(textArea.value);
 
     speech.voice = voices[voiceSelect.value];
 
-    speech.addEventListener("start", function () {
+    speech.addEventListener("start", () => {
       faceImg.src = "assets/images/smiling-open.png";
     });
 
-    speech.addEventListener("end", function () {
+    speech.addEventListener("end", () => {
       faceImg.src = "assets/images/smiling.png";
     });
 
     speechSynthesis.speak(speech);
-  });
+  }
+
+  loadVoices();
+  speechSynthesis.addEventListener("voiceschanged", loadVoices);
+  button.addEventListener("click", speak);
 }
